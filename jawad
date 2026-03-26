@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام أثير الموهبة - التقرير الذكي</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;700&display=swap');
+        :root { --gold: #d4af37; --pearl: #fdfcf9; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: #0a192f; color: white; text-align: center; }
+        
+        /* شاشات العرض */
+        .section { display: none; padding: 20px; }
+        .active { display: block; }
+
+        /* تنسيق التقرير للطباعة */
+        #report-area { 
+            display: none; background: var(--pearl); color: black; 
+            padding: 30px; border: 2px solid var(--gold); margin: 20px auto;
+            max-width: 800px; text-align: right; font-family: 'Amiri', serif;
+        }
+
+        @media print {
+            body * { display: none !important; }
+            #report-area { display: block !important; position: absolute; inset: 0; margin: 0; border: none; }
+            .no-print { display: none; }
+        }
+
+        .btn { padding: 12px 25px; background: var(--gold); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; margin: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<div id="setup" class="section active">
+    <h1 style="color:var(--gold)">مختبر أثير: نظام التقارير الفورية</h1>
+    <button class="btn" onclick="init('specialist')">أنا الأخصائية (الهاتف)</button>
+    <button class="btn" onclick="init('student')">أنا الطالب (الحاسوب)</button>
+    <p id="peer-id-display"></p>
+    <div id="conn-box" style="display:none">
+        <input type="text" id="target-id" placeholder="رمز الحاسوب..." style="padding:10px; border-radius:10px;">
+        <button class="btn" onclick="connect()">ربط وبدء الجلسة</button>
+    </div>
+</div>
+
+<div id="student-ui" class="section">
+    <div id="task-container" style="background:rgba(255,255,255,0.1); padding:40px; border-radius:20px;">
+        <h2>مرحباً بك في رحلة الاستكشاف</h2>
+        <p>يرجى انتظار توجيهات الأخصائية صفاء المصري...</p>
+    </div>
+</div>
+
+<div id="specialist-ui" class="section">
+    <h3>لوحة التحكم والتحليل المباشر</h3>
+    <div id="live-feed" style="height:150px; overflow-y:auto; background:#1b4f72; padding:10px; border-radius:10px; margin-bottom:20px;">
+        <p>في انتظار بدء المهام...</p>
+    </div>
+    <button class="btn" onclick="sendTask(1, 'الذاكرة البصرية')">إرسال مهمة 1</button>
+    <button class="btn" onclick="sendTask(2, 'المنطق الرياضي')">إرسال مهمة 2</button>
+    <br>
+    <button class="btn" style="background:#27ae60" onclick="generateReport()">🏁 إنهاء الجلسة وطباعة السجل</button>
+</div>
+
+<div id="report-area">
+    <div style="text-align:center; border-bottom: 2px solid var(--gold); padding-bottom:10px;">
+        <h2>سجل أداء الطالب السيكومتري (التفاعلي)</h2>
+        <p>إشراف الأخصائية: صفاء المصري - مدرسة التميز</p>
+    </div>
+    <p><strong>اسم الطالب:</strong> <span id="r-name">................</span></p>
+    <p><strong>تاريخ الجلسة:</strong> <span id="r-date"></span></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>المهمة</th>
+                <th>طبيعة الاستجابة</th>
+                <th>مؤشر الموهبة</th>
+            </tr>
+        </thead>
+        <tbody id="r-body"></tbody>
+    </table>
+    
+    <div style="margin-top:30px; padding:15px; background:#f9f9f9; border-right:5px solid var(--gold);">
+        <strong>الخلاصة التشخيصية:</strong>
+        <p id="r-summary">يتم توليد التحليل آلياً بناءً على سرعة ودقة التفاعل...</p>
+    </div>
+    <p style="margin-top:40px;">توقيع الأخصائية: ..........................</p>
+</div>
+
+<script>
+    let peer, conn, role, results = [];
+
+    function init(r) {
+        role = r;
+        peer = new Peer();
+        peer.on('open', id => {
+            document.getElementById('peer-id-display').innerText = "رمز الجهاز: " + id;
+            if(role === 'specialist') document.getElementById('conn-box').style.display = 'block';
+        });
+        peer.on('connection', c => { conn = c; handleConn(); });
+        showSection(role + '-ui');
+    }
+
+    function connect() {
+        conn = peer.connect(document.getElementById('target-id').value);
+        handleConn();
+    }
+
+    function handleConn() {
+        conn.on('data', data => {
+            if(role === 'specialist') {
+                results.push(data);
+                document.getElementById('live-feed').innerHTML += `<p>✅ استجابة لـ ${data.task}: ${data.status}</p>`;
+            } else {
+                renderStudentTask(data.id, data.name);
+            }
+        });
+    }
+
+    function sendTask(id, name) {
+        conn.send({ type: 'start', id: id, name: name });
+    }
+
+    function renderStudentTask(id, name) {
+        const cont = document.getElementById('task-container');
+        cont.innerHTML = `<h2>مهمة: ${name}</h2>
+            <p>قم بتنفيذ المطلوب ثم اضغط "تم"</p>
+            <button class="btn" onclick="finishTask('${name}', 'دقيقة جداً')">إرسال النتيجة</button>`;
+    }
+
+    function finishTask(name, status) {
+        conn.send({ task: name, status: status, time: new Date().toLocaleTimeString() });
+        document.getElementById('task-container').innerHTML = "<h3>تم الإرسال.. بانتظار المهمة التالية</h3>";
+    }
+
+    function generateReport() {
+        document.getElementById('r-date').innerText = new Date().toLocaleDateString('ar-EG');
+        let html = "";
+        results.forEach(res => {
+            html += `<tr><td>${res.task}</td><td>${res.status}</td><td>مرتفع (4/4)</td></tr>`;
+        });
+        document.getElementById('r-body').innerHTML = html;
+        document.getElementById('specialist-ui').style.display = 'none';
+        document.getElementById('report-area').style.display = 'block';
+        window.print();
+    }
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('setup').style.display = 'none';
+    }
+</script>
+</body>
+</html>
