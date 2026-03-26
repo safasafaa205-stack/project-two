@@ -1,1 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منصة التميز الرقمية | صفاء المصري</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@700&display=swap');
+        
+        :root {
+            --royal: #4a148c; --gold: #d4af37; --pink: #f8bbd0;
+            --beige: #f5f5dc; --glass: rgba(255, 255, 255, 0.45);
+        }
 
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        body, html { 
+            margin: 0; padding: 0; min-height: 100vh;
+            font-family: 'Cairo', sans-serif; background: var(--beige);
+            display: flex; align-items: center; justify-content: center; overflow-x: hidden;
+        }
+
+        /* نظام بتلات الورد الجوري المتساقطة */
+        .petal-shower { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal { position: absolute; font-size: 35px; animation: fall linear infinite; filter: drop-shadow(0 0 5px rgba(212,175,55,0.3)); }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+
+        /* الواجهة الزجاجية */
+        .glass-wrapper {
+            position: relative; z-index: 10; width: 95%; max-width: 950px;
+            background: var(--glass); backdrop-filter: blur(25px);
+            border: 2px solid white; border-radius: 50px; padding: 45px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.12); margin: 20px;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+        .header-official {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 4px double var(--gold); padding-bottom: 25px; margin-bottom: 35px;
+        }
+        .header-official img { height: 110px; border-radius: 50%; border: 3px solid var(--gold); background: white; padding: 5px; }
+
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+
+        .intro-text { text-align: center; margin-bottom: 30px; line-height: 1.8; }
+        .intro-text h2 { font-family: 'Amiri', serif; color: var(--royal); font-size: 2.2rem; margin-bottom: 10px; }
+        .intro-text p { color: #555; font-size: 1.1rem; max-width: 80%; margin: 0 auto; font-style: italic; }
+
+        .q-card { 
+            background: white; padding: 25px; border-radius: 30px; 
+            margin-bottom: 20px; border-right: 12px solid var(--royal);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+        }
+        .q-text { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 20px; }
+
+        .scale-options { display: flex; justify-content: space-between; direction: ltr; gap: 10px; }
+        .scale-options label { flex: 1; cursor: pointer; text-align: center; }
+        .scale-options input { display: none; }
+        .scale-options span { 
+            display: block; padding: 14px; background: #fdfdfd; border-radius: 15px; 
+            font-weight: 900; transition: 0.4s; border: 1px solid #eee; color: #444; font-size: 16px;
+        }
+        .scale-options input:checked + span { 
+            background: var(--royal); color: white; transform: scale(1.08);
+            box-shadow: 0 10px 20px rgba(74, 20, 140, 0.35);
+        }
+
+        .btn-action { 
+            background: var(--royal); color: white; border: none; padding: 22px; 
+            border-radius: 60px; width: 100%; font-size: 22px; font-weight: 900; 
+            cursor: pointer; transition: 0.4s; box-shadow: 0 12px 30px rgba(74, 20, 140, 0.2);
+            text-align: center; display: block; text-decoration: none;
+        }
+        .btn-action:hover { background: #311b92; transform: translateY(-3px); letter-spacing: 1px; }
+
+        /* السجل الإداري */
+        #adminLog { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; padding: 50px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; font-size: 15px; }
+        th, td { padding: 18px; border: 1px solid #ddd; text-align: center; }
+        th { background: var(--royal); color: white; font-weight: 900; }
+
+        /* التقرير والتحليل */
+        #reportView { background: white; padding: 45px; border-radius: 40px; border: 4px solid var(--gold); }
+        .res-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 30px; }
+        .res-pill { background: #fffaf0; padding: 15px; border-radius: 18px; border: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px; }
+        
+        .analysis-box { margin-top: 35px; padding: 25px; background: #f0f4f8; border-radius: 25px; border-right: 12px solid var(--gold); text-align: right; }
+        .analysis-title { color: var(--royal); font-weight: 900; font-size: 22px; margin-bottom: 12px; border-bottom: 1px solid var(--gold); display: inline-block; }
+        .analysis-text { color: #333; line-height: 1.8; font-size: 17px; margin-bottom: 20px; }
+
+        @media print { .no-print { display: none !important; } .glass-wrapper { border: none; background: white; width: 100%; box-shadow: none; margin: 0; } body { background: white; } }
+    </style>
+</head>
+<body>
+
+<div class="petal-shower" id="petals"></div>
+
+<div class="glass-wrapper">
+    <div class="header-official">
+        <img src="https://i.ibb.co/LD5zFqV9/IMG-20260219-WA0001.jpg" alt="وزارة التربية">
+        <div style="text-align: center; flex: 1;">
+            <h1 style="font-family: 'Amiri', serif; color: var(--royal); margin: 0; font-size: 32px; font-weight: 900;">مدرسة الملك عبدالله الثاني للتميز</h1>
+            <p style="color: var(--gold); font-weight: 900; margin: 5px 0; font-size: 18px;">نظام رينزولي الرقمي الموزون</p>
+            <p style="font-size: 15px; margin: 0; font-weight: bold; color: #444;">أخصائية موهبة وإبداع: صفاء المصري</p>
+        </div>
+        <img src="https://i.ibb.co/Rk0VndR8/IMG-20260219-WA0000.jpg" alt="شعار المدرسة">
+    </div>
+
+    <div class="step active" id="startStep">
+        <div class="intro-text">
+            <h2>رؤية تربوية لاكتشاف التميز</h2>
+            <p>"الموهبة هي الجوهرة التي نصقلها بالرعاية.. هنا نبدأ رحلة التشخيص الدقيق لبناء جيل المبدعين."</p>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <input type="text" id="stdName" placeholder="أدخلي اسم الطالب الرباعي..." style="width:100%; padding:25px; border-radius:30px; border:3px solid var(--gold); text-align:center; font-size:24px; outline: none; background: rgba(255,255,255,0.9); font-weight: 700;">
+        </div>
+        <button class="btn-action" onclick="initiate()">بدء التقييم الرسمي ➔</button>
+        <button class="btn-action" style="background:#555; margin-top: 15px; font-size: 16px; padding: 12px;" onclick="toggleLog()">📊 السجل الإداري العام</button>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="step" id="finalStep">
+        <div id="reportView"></div>
+        <div style="margin-top: 35px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="no-print">
+            <button class="btn-action" onclick="window.print()">🖨️ طباعة التقرير</button>
+            <button class="btn-action" style="background:#4a148c;" onclick="resetTest()">🔄 تقييم طالب جديد</button>
+            <button class="btn-action" style="background:#555; grid-column: span 2;" onclick="toggleLog()">📊 عرض قاعدة البيانات</button>
+        </div>
+    </div>
+</div>
+
+<div id="adminLog">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--gold); padding-bottom: 15px;">
+        <h2 style="color: var(--royal); font-family: 'Amiri', serif; font-size: 28px;">سجل الموهوبين المعتمد</h2>
+        <button class="btn-action" style="width: auto; padding: 10px 30px;" onclick="toggleLog()">إغلاق</button>
+    </div>
+    <table id="logTable">
+        <thead><tr><th>التاريخ</th><th>اسم الطالب</th><th>المعدل العام</th><th>التشخيص</th></tr></thead>
+        <tbody></tbody>
+    </table>
+    <div class="no-print" style="margin-top: 20px;">
+        <button class="btn-action" style="background: #d32f2f; width: auto; display: inline-block;" onclick="clearLog()">مسح السجل</button>
+    </div>
+</div>
+
+<script>
+    function playBeep() { try { const ctx = new AudioContext(); const osc = ctx.createOscillator(); const g = ctx.createGain(); osc.connect(g); g.connect(ctx.destination); osc.frequency.value = 700; g.gain.setValueAtTime(0.04, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.1); } catch(e){} }
+
+    const data = [
+        {t: "1. خصائص التعلم", w: 5, q: ["يمتلك ثروة لغوية فائقة ويستخدمها بذكاء في السياق", "يستوعب التعميمات والمبادئ العلمية بسرعة مدهشة", "يدرك العلاقات السببية والمنطقية بعمق يتخطى أقرانه", "يفضل التحدي في الكتب والمواضيع ذات الطابع المعقد", "ينقل أثر التعلم بمرونة عالية من موقف إلى آخر"]},
+        {t: "2. الدافعية والإرادة", w: 5, q: ["ينغمس كلياً في المهام التي تثير فضوله وشغفه المعرفي", "يثابر بقوة عند مواجهة التحديات أو العقبات الفنية", "يهتم بجودة المنتج النهائي ويسعى للوصول لدرجة الإتقان", "يتحمل المسؤولية الكاملة عن المهام الموكلة إليه بإخلاص", "يظهر انضباطاً ذاتياً عالياً دون الحاجة لمحفزات خارجية"]},
+        {t: "3. الإبداع والأصالة", w: 5, q: ["يقدم أفكاراً وحلولاً أصيلة ومبتكرة تبتعد عن التقليد", "يظهر تفكيراً تخيلياً واسع المدى في طرح السيناريوهات", "يتمتم بحس فكاهي ذكي وقدرة على رؤية المفارقات", "يميل للمغامرة الفكرية والاستعداد لتجربة المسارات الجديدة", "يبدي مرونة عالية في تعديل آرائه ومساراته عند الحاجة"]},
+        {t: "4. السمات القيادية", w: 4, q: ["يحظى بثقة زملائه وتأثيره في قراراتهم قوي ومقنع", "يتحمل المسؤولية القيادية بتلقائية وثقة في المجموعات", "يعبر عن أفكاره بطلاقة لغوية وقوة حضور لافتة", "لديه مهارة تنظيمية فطرية في توجيه أنشطة الآخرين"]},
+        {t: "5. التعبير الفني", w: 4, q: ["يظهر دقة فائقة في تمثيل التفاصيل والظلال في أعماله", "يبتكر حلولاً تشكيلية بصرية غير مألوفة تثير الإعجاب", "يخصص وقتاً طويلاً من ذاته لتطوير مشاريعه الفنية", "يبدي حساسية عالية للتناغم البصري والجمال في محيطه"]},
+        {t: "6. التذوق الموسيقي", w: 4, q: ["يميز الإيقاعات والنغمات بحساسية مرهفة جداً", "يتذكر الألحان بسرعة مذهلة ويؤديها بدقة عالية", "يبتكر مقاطع لحنية خاصة تعكس ذوقاً فنياً فطرياً", "يتفاعل وجدانياً مع المقطوعات الموسيقية بشكل عميق"]},
+        {t: "7. الأداء الدرامي", w: 4, q: ["يتقمص الأدوار والمشاعر ببراعة مدهشة تجذب الانتباه", "يستخدم لغة جسد معبرة وإيماءات درامية دقيقة جداً", "لديه مهارة الارتجال والتعامل الذكي مع المواقف الطارئة", "يثير استجابة عاطفية قوية لدى الجمهور أثناء تأديته"]},
+        {t: "8. التواصل الفعال", w: 5, q: ["يعبر عن أفكاره بوضوح تام ودقة لغوية ملحوظة", "يعدل أسلوبه ليتناسب مع المستمعين بذكاء اجتماعي", "يستخدم صوراً بيانية وكلمات واصفة تضفي تشويقاً", "يحاور الآخرين بمنطقية واحترام عالي لوجهات النظر", "يفهم لغة الجسد ببراعة ويتفاعل معها بذكاء فطري"]},
+        {t: "9. مهارات التخطيط", w: 5, q: ["يحدد أولويات العمل بكفاءة ويضع خطوات إجرائية واضحة", "يتوقع العقبات ويضع خططاً بديلة لمواجهة التحديات", "يستثمر الوقت والموارد المتاحة بطريقة منظمة جداً", "ينظم تفاصيل مشروعه بدقة احترافية وسياق منطقي", "يتابع مراحل الإنجاز ويقيم النتائج بشكل موضوعي"]},
+        {t: "10. التفكير الرياضي", w: 4, q: ["يحل المسائل المعقدة بسرعة وبطرق ابتكارية غير نمطية", "يدرك الأنماط العددية بلمحة خاطفة ودون مجهود", "يستمتع بالتحديات الحسابية والألغاز التي تتطلب منطقاً", "يستخدم التفكير المجرد ببراعة في حل المشكلات الرقمية"]},
+        {t: "11. الميول القرائية", w: 4, q: ["يميل لقراءة مواد تفوق مستواه العمري والأكاديمي", "يستوعب النصوص المعقدة ويناقش أبعادها برؤية نقدية", "يخصص وقتاً طويلاً للقراءة البحثية الحرة والمستقلة", "يربط ببراعة بين ما يقرأه وبين الواقع المعاش"]},
+        {t: "12. الكفاءة الرقمية", w: 4, q: ["يظهر مهارات تقنية متقدمة جداً مقارنة بسنه الزمني", "يتعلم البرمجيات الجديدة بسرعة ذاتية مذهلة دون تدريب", "يوظف التقنية بشكل مبتكر في حل المشكلات الحياتية", "يساعد الآخرين في تجاوز الصعوبات التقنية باحترافية"]},
+        {t: "13. الفضول العلمي", w: 4, q: ["يظهر فضولاً واسعاً حول كنه الأشياء وأسباب حدوثها", "يقدم تفسيرات منطقية ومقنعة جداً للظواهر المحيطة", "يستمتع بإجراء التجارب العملية والبحث عن إجابات ملموسة", "يطرح تساؤلات عميقة تبحث في جوهر القوانين العلمية"]}
+    ];
+
+    const quizBox = document.getElementById('quizContainer');
+    data.forEach((sec, sIdx) => {
+        let div = document.createElement('div'); div.className = 'step'; div.id = 's'+(sIdx+1);
+        div.innerHTML = `<h3 style="text-align:center; color:var(--royal); background:var(--pink); padding:18px; border-radius:25px; font-weight:900;">المجال: ${sec.t}</h3>`;
+        sec.q.forEach((q, qIdx) => {
+            div.innerHTML += `<div class="q-card"><p class="q-text">${qIdx+1}. ${q}</p>
+            <div class="scale-options">${[1,2,3,4,5,6].map(v => `<label><input type="radio" name="r${sIdx}q${qIdx}" value="${v}"><span>${v}</span></label>`).join('')}</div></div>`;
+        });
+        div.innerHTML += `<button class="btn-action" onclick="move(${sIdx+2}, ${sIdx})">حفظ وانتقال ➔</button>`;
+        quizBox.appendChild(div);
+    });
+
+    function initiate() { if(document.getElementById('stdName').value.trim().length > 4) move(1); else alert("يرجى إدخال اسم الطالب كاملاً."); }
+
+    function move(n, curr) {
+        if(curr !== undefined) {
+            let ans = document.querySelectorAll(`#s${curr+1} input:checked`).length;
+            if(ans < data[curr].q.length) { alert("يجب تقييم كافة الفقرات الجوهرية لضمان صدق النتيجة."); return; }
+        }
+        playBeep();
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        let next = document.getElementById('s'+n) || document.getElementById('finalStep');
+        next.classList.add('active'); window.scrollTo(0,0);
+        if(next.id === 'finalStep') generateReport();
+    }
+
+    function resetTest() {
+        if(confirm("هل تودين إفراغ النموذج لتقييم طالب جديد؟")) {
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            document.getElementById('stdName').value = "";
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('startStep').classList.add('active');
+            window.scrollTo(0,0);
+        }
+    }
+
+    function generateReport() {
+        let detailHtml = ""; let grandAvg = 0; let scores = [];
+        data.forEach((s, sIdx) => {
+            let sum = 0; document.querySelectorAll(`input[name^="r${sIdx}"]:checked`).forEach(i => sum += parseInt(i.value));
+            let pct = (sum / (s.q.length * 6)) * 100; grandAvg += pct;
+            scores.push({name: s.t, score: pct});
+            detailHtml += `<div class="res-pill"><span>${s.t.split('(')[0]}</span><span style="color:var(--royal)">${pct.toFixed(1)}%</span></div>`;
+        });
+        let final = grandAvg / data.length;
+        let diagnosis = final >= 85 ? "💎 موهبة استثنائية جداً" : final >= 70 ? "🌟 موهبة واعدة مرتفعة" : "📈 قدرات متميزة";
+        
+        // منطق التحليل التربوي والإثرائي
+        let sortedScores = [...scores].sort((a,b) => b.score - a.score);
+        let topScale = sortedScores[0];
+        let analysisText = ""; let program = "";
+
+        if(final >= 80) {
+            analysisText = "يمتلك الطالب بروفايلاً متوازناً للموهبة (The Balanced Gifted)، حيث تتقاطع القدرة العالية مع الالتزام بالمهمة والإبداع. هذا الطالب جاهز للتعامل مع المفاهيم المجردة والتحديات الكبرى.";
+        } else {
+            analysisText = `يظهر الطالب تميزاً نوعياً مركزاً في مجال (${topScale.name})، مما يعكس ذكاءً متخصصاً يتطلب بيئة تعليمية تتيح له التعمق في مجالات شغفه.`;
+        }
+
+        // تحديد البرنامج الإثرائي الموصى به
+        if(topScale.name.includes("تعلم") || topScale.name.includes("قراءة")) program = "<b>برنامج الإثراء الأكاديمي المعمق:</b> توجيه الطالب نحو القراءة النقدية، البحث العلمي المستقل، والمناظرات الفكرية.";
+        else if(topScale.name.includes("إبداع") || topScale.name.includes("فني") || topScale.name.includes("دراما")) program = "<b>برنامج حل المشكلات بطرق إبداعية (CPS):</b> إشراك الطالب في ورش العمل الابتكارية والمشاريع الفنية التي تتطلب حلولاً خارج الصندوق.";
+        else if(topScale.name.includes("رياضيات") || topScale.name.includes("تكنولوجيا") || topScale.name.includes("علوم")) program = "<b>برنامج الإثراء التقني والعلمي (STEM):</b> دمج الطالب في نوادي البرمجة، الروبوتيك، أو مختبرات البحث العلمي المتقدمة.";
+        else program = "<b>برنامج القيادة والذكاء الوجداني:</b> تنمية مهارات التأثير المجتمعي، التخطيط للمبادرات، والقيادة الملهمة.";
+
+        document.getElementById('reportView').innerHTML = `
+            <div style="text-align:center;">
+                <h2 style="font-family:'Amiri', serif; font-size:28px;">تقرير تشخيص سمات الموهبة</h2>
+                <p>الطالب: <b>${document.getElementById('stdName').value}</b></p>
+                <p>التاريخ: ${new Date().toLocaleDateString('ar-JO')}</p>
+            </div><hr style="border:1px solid var(--gold)">
+            <div style="font-size:32px; text-align:center; color:var(--royal); margin:20px 0; font-weight:900;">المعدل العام: ${final.toFixed(1)}%</div>
+            <div style="text-align:center; font-size:20px; color:var(--gold); font-weight:900; margin-bottom:25px;">التشخيص الفني: ${diagnosis}</div>
+            
+            <div class="res-grid">${detailHtml}</div>
+
+            <div class="analysis-box">
+                <div class="analysis-title">📝 التحليل التربوي الشامل:</div>
+                <div class="analysis-text">${analysisText}</div>
+                <div class="analysis-title">🚀 البرنامج الإثرائي الموصى به:</div>
+                <div class="analysis-text">${program}</div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top:50px; text-align:center; font-weight:900;">
+                <div>أخصائية الموهبة والإبداع<br><br>صفاء المصري</div>
+                <div>المرشدة الأكاديمية<br><br>دعاء بلعاوي</div>
+            </div>
+        `;
+        let row = document.getElementById('logTable').querySelector('tbody').insertRow();
+        row.innerHTML = `<td>${new Date().toLocaleDateString()}</td><td>${document.getElementById('stdName').value}</td><td>${final.toFixed(1)}%</td><td>${diagnosis}</td>`;
+    }
+
+    function toggleLog() { playBeep(); let l = document.getElementById('adminLog'); l.style.display = l.style.display === 'block' ? 'none' : 'block'; }
+    function clearLog() { if(confirm("مسح كافة البيانات من السجل؟")) document.getElementById('logTable').querySelector('tbody').innerHTML = ""; }
+
+    for(let i=0; i<35; i++) {
+        let p = document.createElement('div'); p.className='petal'; p.innerHTML='🌸';
+        p.style.left=Math.random()*100+'vw'; p.style.animationDuration=(Math.random()*6+5)+'s';
+        document.getElementById('petals').appendChild(p);
+    }
+</script>
+</body>
+</html>
