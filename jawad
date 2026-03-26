@@ -17,8 +17,7 @@
         #report-area { 
             display: none; background: var(--pearl); color: black; 
             padding: 30px; border: 2px solid var(--gold); margin: 20px auto;
-            max-width: 800px; text-align: right; font-family: 'Amiri', serif;
-        }
+            max-width: 800px; text-align: right; font-family: 'Amiri', serif;   }
 
         @media print {
             body * { display: none !important; }
